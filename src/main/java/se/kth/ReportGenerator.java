@@ -57,7 +57,7 @@ public class ReportGenerator {
                 }
 
                 res =   "                    <tr class=\"" + cla + "\">\n" +
-                        "                        <td class=\"" + cla + "\">" + f.getName() + "</td>\n" +
+                        "                        <td class=\"" + cla + "\"><a href=\"/config/" + FileManager.getPath(f, fm.src) + "\">" + f.getName() + "</a></td>\n" +
                         "                        <td class=\"" + cla + "\">.</td>\n" +
                         "                        <td class=\"" + cla + "\">.</td>\n" +
                         "                        <td class=\"" + cla + "\">.</td>\n" +
