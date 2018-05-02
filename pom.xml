@@ -93,7 +93,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>fr.inria.diversify.Main</mainClass>
+              <mainClass>se.kth.App</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

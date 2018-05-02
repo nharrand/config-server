@@ -23,6 +23,9 @@ public class FileManagerTest {
         src = new File("src/test/resources/src");
         dest = new File("src/test/resources/dest");
         errors = new File("src/test/resources/errors");
+        if(!src.exists()) src.mkdirs();
+        if(!dest.exists()) dest.mkdirs();
+        if(!errors.exists()) errors.mkdirs();
     }
 
     @Test
