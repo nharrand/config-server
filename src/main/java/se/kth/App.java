@@ -48,27 +48,50 @@ public class App {
 
             get("/getConfig", (Request req, Response res) -> {
                 res.type("text/json");
-                File jsonFile = fm.getConfig();
-                File properties = new File(jsonFile.getParentFile(), "properties.properties");
-                Properties p = new Properties();
-                if(properties.exists() && properties.isFile()) {
-                    p.load(new FileInputStream(properties));
+                File jsonFile = fm.getConfig(req.ip());
+                if(jsonFile != null) {
+                    File properties = new File(jsonFile.getParentFile(), "properties.properties");
                     res.status(200);
-                    res.type("text/json");
-                    Enumeration<String> enums = (Enumeration<String>) p.propertyNames();
-                    while (enums.hasMoreElements()) {
-                        String key = enums.nextElement();
-                        String value = p.getProperty(key);
-                        res.header(key,value);
+                    Properties p = new Properties();
+                    if(properties.exists() && properties.isFile()) {
+                        p.load(new FileInputStream(properties));
+                        p.setProperty("transformation.directory", "transformations/" + FileManager.getPath(jsonFile,fm.src));
+                        p.setProperty("result", "output/" + FileManager.getPath(jsonFile,fm.src));
+                        res.type("text/json");
+                        Enumeration<String> enums = (Enumeration<String>) p.propertyNames();
+                        while (enums.hasMoreElements()) {
+                            String key = enums.nextElement();
+                            String value = p.getProperty(key);
+                            res.header(key,value);
+                        }
                     }
+
+                    return FileManager.getFileContent(jsonFile);
+                } else {
+                    res.status(204);
+                    return "No more configuration to process.";
                 }
-                return FileManager.getFileContent(jsonFile);
             });
 
             post("/postResult", (Request req, Response res) -> {
                 String config = req.headers("transformation.directory");
-                res.status(200);
-                fm.postResult(config, req.body());
+                if(config != null) {
+                    res.status(200);
+                    fm.postResult(config, req.body(), req.ip());
+                } else  {
+                    res.status(400);
+                }
+                return "";
+            });
+
+            post("/postError", (Request req, Response res) -> {
+                String config = req.headers("transformation.directory");
+                if(config != null) {
+                    res.status(200);
+                    fm.postError(config, req.body());
+                } else  {
+                    res.status(400);
+                }
                 return "";
             });
 
@@ -106,30 +129,31 @@ public class App {
                 }
             });
 
-            get("/result/:path", (Request req, Response res) -> {
-                res.type("text/json");
-                File f = new File(destDir, req.params(":path"));
-                if(f.exists() && f.isFile())
+            get("/result/*", (Request req, Response res) -> {
+                String str = String.join("/", req.splat());
+
+                File f = new File(destDir, str);
+                if(f.exists() && f.isFile()) {
+                    res.type("text/json");
                     return FileManager.getFileContent(f);
-                else {
+                } else {
                     res.status(404);
                     return "file not found";
                 }
             });
 
-            get("/errors/:path", (Request req, Response res) -> {
-                res.type("text/json");
-                File f = new File(errorDir, req.params(":path"));
-                if(f.exists() && f.isFile())
+            get("/errors/*", (Request req, Response res) -> {
+                String str = String.join("/", req.splat());
+
+                File f = new File(errorDir, str);
+                if(f.exists() && f.isFile()) {
+                    res.type("text/json");
                     return FileManager.getFileContent(f);
-                else {
+                } else {
                     res.status(404);
                     return "file not found";
                 }
             });
-
-
-
 
             System.out.println("Server is Running");
         }

@@ -33,7 +33,7 @@ public class FileManagerTest {
 
         FileManager fm = new FileManager(src,dest,errors);
 
-        assertTrue(fm.getConfig() == null);
+        assertTrue(fm.getConfig("0.0.0.0") == null);
 
     }
 
@@ -49,7 +49,7 @@ public class FileManagerTest {
 
         fm.reload();
 
-        assertTrue(fm.getConfig().getPath().equals(conf1.getPath()));
+        assertTrue(fm.getConfig("0.0.0.0").getPath().equals(conf1.getPath()));
 
         conf1.delete();
         projetA.delete();
@@ -64,7 +64,7 @@ public class FileManagerTest {
 
 
         FileManager fm = new FileManager(src,dest,errors);
-        assertTrue(fm.getConfig().getPath().equals(conf2.getPath()));
+        assertTrue(fm.getConfig("0.0.0.0").getPath().equals(conf2.getPath()));
         assertTrue(fm.configs.get("projetB/conf2.json").equals(FileManager.STATUS.IN_PROGRESS));
 
 
@@ -78,7 +78,7 @@ public class FileManagerTest {
         conf3.createNewFile();
         fm.reload();
 
-        assertTrue(fm.getConfig().getPath().equals(conf3.getPath()));
+        assertTrue(fm.getConfig("0.0.0.0").getPath().equals(conf3.getPath()));
         assertTrue(fm.configs.get("projetC/sub/conf3.json").equals(FileManager.STATUS.IN_PROGRESS));
 
         conf3.delete();
@@ -92,10 +92,10 @@ public class FileManagerTest {
         File conf6 = new File(src, "projetC/sub/conf6.json");
         conf6.createNewFile();
         fm.reload();
-        assertTrue(FileManager.getPath(fm.getConfig(),src).startsWith("projetC/sub/"));
-        assertTrue(FileManager.getPath(fm.getConfig(),src).startsWith("projetC/sub/"));
-        assertTrue(FileManager.getPath(fm.getConfig(),src).startsWith("projetC/sub/"));
-        assertTrue(fm.getConfig() == null);
+        assertTrue(FileManager.getPath(fm.getConfig("0.0.0.0"),src).startsWith("projetC/sub/"));
+        assertTrue(FileManager.getPath(fm.getConfig("0.0.0.0"),src).startsWith("projetC/sub/"));
+        assertTrue(FileManager.getPath(fm.getConfig("0.0.0.0"),src).startsWith("projetC/sub/"));
+        assertTrue(fm.getConfig("0.0.0.0") == null);
 
         conf4.delete();
         conf5.delete();
@@ -127,17 +127,17 @@ public class FileManagerTest {
         assertTrue(fm.configs.get("projetE/conf8.json").equals(FileManager.STATUS.TO_DO));
         assertTrue(fm.configs.get("projetE/sub/conf9.json").equals(FileManager.STATUS.TO_DO));
 
-        fm.getConfig();
-        fm.getConfig();
-        fm.getConfig();
+        fm.getConfig("0.0.0.0");
+        fm.getConfig("0.0.0.0");
+        fm.getConfig("0.0.0.0");
 
         assertTrue(fm.configs.get("projetD/conf7.json").equals(FileManager.STATUS.IN_PROGRESS));
         assertTrue(fm.configs.get("projetE/conf8.json").equals(FileManager.STATUS.IN_PROGRESS));
         assertTrue(fm.configs.get("projetE/sub/conf9.json").equals(FileManager.STATUS.IN_PROGRESS));
 
-        fm.postResult("projetD/conf7.json","res");
-        fm.postResult("projetE/conf8.json","res");
-        fm.postResult("projetE/sub/conf9.json","res");
+        fm.postResult("projetD/conf7.json","res", "0.0.0.0");
+        fm.postResult("projetE/conf8.json","res", "0.0.0.0");
+        fm.postResult("projetE/sub/conf9.json","res", "0.0.0.0");
 
         assertTrue(fm.configs.get("projetD/conf7.json").equals(FileManager.STATUS.DONE));
         assertTrue(fm.configs.get("projetE/conf8.json").equals(FileManager.STATUS.DONE));

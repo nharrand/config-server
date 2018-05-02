@@ -18,6 +18,7 @@ public class FileManager {
     File errors;
 
     Map<String, STATUS> configs;
+    Map<String, String> assignement;
 
     public enum STATUS {
         DONE,IN_PROGRESS,TO_DO,ERROR
@@ -29,6 +30,7 @@ public class FileManager {
         this.dest = dest;
         this.errors = errors;
         this.configs = new HashMap<>();
+        this.assignement = new HashMap<>();
         reload();
     }
 
@@ -46,7 +48,7 @@ public class FileManager {
         }
     }
 
-    public File getConfig() {
+    public File getConfig(String ip) {
         File res = configs.entrySet().stream()
                 .filter(e -> e.getValue() == STATUS.TO_DO)
                 .findAny()
@@ -54,22 +56,30 @@ public class FileManager {
                 .orElse(null);
         if(res != null) {
             configs.put(getPath(res, src), STATUS.IN_PROGRESS);
+            assignement.put(getPath(res, src), ip);
         }
         return res;
     }
 
-    public void postResult(String config, String res) {
-        if(configs.containsKey(config) && configs.get(config) == STATUS.IN_PROGRESS) {
+    public void postResult(String config, String res, String ip) {
+        if(configs.containsKey(config) && (configs.get(config) == STATUS.IN_PROGRESS
+            || configs.get(config) == STATUS.TO_DO)) {
             File f = new File(dest,config);
             createPath(f);
             writeFile(res,f);
             configs.put(config,STATUS.DONE);
+            assignement.put(config, ip);
         } else {
-            File f = new File(errors,config);
-            createPath(f);
-            writeFile(res,f);
-            configs.put(config,STATUS.ERROR);
+            postError(config, res);
         }
+    }
+
+    public void postError(String config, String res) {
+        if(config.endsWith(".json")) config = config.substring(0,config.length()-4);
+        File f = new File(errors,config);
+        createPath(f);
+        writeFile(res,f);
+        configs.put(config,STATUS.ERROR);
     }
 
     public static Set<String> listJSONFile(File dir, File origin) {

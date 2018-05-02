@@ -59,9 +59,23 @@ public class ReportGenerator {
                 res =   "                    <tr class=\"" + cla + "\">\n" +
                         "                        <td class=\"" + cla + "\"><a href=\"/config/" + FileManager.getPath(f, fm.src) + "\">" + f.getName() + "</a></td>\n" +
                         "                        <td class=\"" + cla + "\">.</td>\n" +
-                        "                        <td class=\"" + cla + "\">.</td>\n" +
-                        "                        <td class=\"" + cla + "\">.</td>\n" +
-                        "                        <td class=\"" + cla + "\">.</td>\n" +
+                        "                        <td class=\"" + cla + "\">" + cla + "</td>\n" +
+                        "                        <td class=\"" + cla + "\">";
+                if(fm.assignement.containsKey(path)) {
+                    res += fm.assignement.get(path);
+                } else {
+                    res += ".";
+                }
+                res += "</td>\n" +
+                        "                        <td class=\"" + cla + "\">";
+                if(fm.configs.get(path).equals(FileManager.STATUS.DONE)) {
+                    res += "<a href=\"/result/" + FileManager.getPath(f, fm.src) + "\">" + f.getName() + "</a>";
+                } else if(fm.configs.get(path).equals(FileManager.STATUS.ERROR)) {
+                    res += "<a href=\"/error/" + FileManager.getPath(f, fm.src) + "\">" + f.getName() + "</a>";
+                } else {
+                    res += ".";
+                }
+                res += "</td>\n" +
                         "                    </tr>\n";
             }
         }
