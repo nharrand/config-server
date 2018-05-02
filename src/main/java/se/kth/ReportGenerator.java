@@ -7,9 +7,12 @@ public class ReportGenerator {
     public static String generateReport(FileManager fm) {
         String html = getTemplateByID("templates/overview.html");
         html = html.replace("<!--header-->", generateTableHeader());
+        String section = "";
         for(File f : fm.src.listFiles()) {
-            html = html.replace("<!--sections-->", generateDirReport(fm, f));
+            //html = html.replace("<!--sections-->", generateDirReport(fm, f));
+            section += generateDirReport(fm, f);
         }
+        html = html.replace("<!--sections-->", section);
         return html;
     }
 
