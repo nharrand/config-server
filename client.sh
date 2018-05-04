@@ -4,6 +4,7 @@
 #SOSIFIER=$1
 SOSIFIER="/sosie/main.jar"
 LOGDIR="log"
+URL="127.0.0.1:8080"
 mkdir log
 chmod +rw log
 #loop
@@ -11,7 +12,7 @@ chmod +rw log
 
 while true; do 
 	#get config
-	curl -X GET -i http://localhost:8080/getConfig -o tmp.json
+	curl -X GET -i http://$URL/getConfig -o tmp.json
 	#if Answer is not 200 stop
 	STATUS=`cat tmp.json | head -n 1 | cut -d ' ' -f2`
 
@@ -44,9 +45,9 @@ while true; do
 	#if something goes wrong post error
 	if [ $STATUS -ne 0 ]
 	then
-		curl -i http://localhost:8080/postError  -d @$LOG --header "Content-Type: text/plain" --header "transformation.directory:$CONFIG" -o out
+		curl -i http://$URL/postError  -d @$LOG --header "Content-Type: text/plain" --header "transformation.directory:$CONFIG" -o out
 	else
-		curl -i http://localhost:8080/postResult  -d @$RESULT --header "Content-Type: application/json" --header "transformation.directory:$CONFIG" -o out
+		curl -i http://$URL/postResult  -d @$RESULT --header "Content-Type: application/json" --header "transformation.directory:$CONFIG" -o out
 	fi
 	STATUS=`cat out | grep "200 OK" | wc -l`
 	echo "POST STATUS $STATUS" >> $LOG
